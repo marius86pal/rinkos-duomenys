@@ -9,7 +9,7 @@ on:
       - "akcijos.txt"
       - "etf.txt"
   schedule:
-    - cron: "23 3 * * 6"   # šeštadieniais 03:23 UTC – po penktadienio uždarymo
+      - cron: "23 3 * * 2-6" # antradienį–šeštadienį 03:23 UTC – po kiekvienos JAV prekybos dienos
   workflow_dispatch:         # galima paleisti ranka: Actions → Rinkos duomenys → Run workflow
 
 permissions:
