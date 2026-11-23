@@ -1,0 +1,10 @@
+# Papildomos akcijos prie S&P 500: ADR, Europos akcijos ir stebimos „beveik signalų“ akcijos.
+# Vienas tikeris eilutėje, Yahoo formatu (pvz., Amsterdamas .AS, Frankfurtas .DE, Paryžius .PA).
+# Šios akcijos tikrinamos kas savaitę net jei nepraeina kainų filtro.
+KO      # stebima nuo 2026-11-22
+IBN     # stebima nuo 2026-11-22
+IDXX    # stebima nuo 2026-11-23
+ROP     # stebima nuo 2026-11-23
+HDB
+INFY
+TSM
