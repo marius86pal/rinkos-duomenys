@@ -1,6 +1,13 @@
 name: Rinkos duomenys
 
 on:
+  push:                      # pasileidžia savaime, kai pakeiti šiuos failus
+    branches: [main]
+    paths:
+      - ".github/workflows/rinkos-duomenys.yml"
+      - "surinkti.py"
+      - "akcijos.txt"
+      - "etf.txt"
   schedule:
     - cron: "23 3 * * 6"   # šeštadieniais 03:23 UTC – po penktadienio uždarymo
   workflow_dispatch:         # galima paleisti ranka: Actions → Rinkos duomenys → Run workflow
