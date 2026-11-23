@@ -1,0 +1,23 @@
+{
+ "generated_utc": "2026-11-23T20:59:01+00:00",
+ "last_price_date": "2026-11-23",
+ "source": "Yahoo Finance per yfinance",
+ "yfinance": "1.8.0",
+ "universe_stocks": 507,
+ "universe_etf": 23,
+ "priced": 529,
+ "candidates": 166,
+ "eps_ok": 166,
+ "vt": {
+  "ticker": "VT",
+  "date": "2026-11-23",
+  "close": 148.18,
+  "ret_1m": -4.95,
+  "ret_3m": -7.72,
+  "ret_6m": -5.26,
+  "ret_1y": 11.81,
+  "from_100d_high": -8.52,
+  "from_52w_high": -8.52
+ },
+ "errors": []
+}
