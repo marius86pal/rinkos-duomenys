@@ -1,0 +1,25 @@
+# ETF, kurių kainas verta turėti (tik kainos ir grąžos; ETF atranka daroma per ETFIQ).
+# Vienas tikeris eilutėje, Yahoo formatu. Viskas po # – komentaras.
+VT      # pasaulio lyginamasis
+IEMG
+QQQ
+XLK
+XLP
+VDC
+XLV
+XLU
+HDV
+SPLV
+NOBL
+SDY
+INDA
+EPI
+FLIN
+EWZ
+EWY
+EWT
+URNM
+PHO
+IHI
+SMH
+XBI
