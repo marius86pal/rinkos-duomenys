@@ -1,0 +1,40 @@
+name: Rinkos duomenys
+
+on:
+  schedule:
+    - cron: "23 3 * * 6"   # šeštadieniais 03:23 UTC – po penktadienio uždarymo
+  workflow_dispatch:         # galima paleisti ranka: Actions → Rinkos duomenys → Run workflow
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rinkos-duomenys
+  cancel-in-progress: false
+
+jobs:
+  surinkti:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Įdiegti priklausomybes
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install --quiet "yfinance>=1.8,<2" "pandas>=2"
+
+      - name: Surinkti duomenis
+        run: .venv/bin/python surinkti.py
+
+      - name: Įrašyti į repozitoriją
+        run: |
+          git config user.name "rinkos-duomenys"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "Pakeitimų nėra"
+          else
+            git commit -m "Duomenys $(date -u +%F)"
+            git push
+          fi
