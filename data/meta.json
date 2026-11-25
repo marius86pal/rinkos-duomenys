@@ -1,13 +1,23 @@
 {
- "generated_utc": "2026-11-25T04:36:01+00:00",
+ "generated_utc": "2026-11-25T05:59:37+00:00",
  "last_price_date": "2026-11-24",
  "source": "Yahoo Finance per yfinance",
  "yfinance": "1.8.0",
  "universe_stocks": 507,
- "universe_etf": 23,
- "priced": 529,
+ "universe_etf": 32,
+ "priced": 537,
  "candidates": 182,
  "eps_ok": 182,
+ "analysts_ok": 182,
+ "analysts_errors": 0,
+ "analyst_actions_90d": 1826,
+ "archive": {
+  "built_utc": "2026-11-25T05:59:37+00:00",
+  "from": "2000-01-03",
+  "to": "2026-11-24",
+  "tickers": 539,
+  "rebuilt": true
+ },
  "vt": {
   "ticker": "VT",
   "date": "2026-11-24",
