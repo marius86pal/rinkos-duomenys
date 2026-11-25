@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-11-25T05:59:37+00:00",
+ "generated_utc": "2026-11-25T08:12:24+00:00",
  "last_price_date": "2026-11-24",
  "source": "Yahoo Finance per yfinance",
  "yfinance": "1.8.0",
@@ -12,10 +12,17 @@
  "analysts_errors": 0,
  "analyst_actions_90d": 1826,
  "archive": {
-  "built_utc": "2026-11-25T05:59:37+00:00",
+  "built_utc": "2026-11-25T08:01:52+00:00",
   "from": "2000-01-03",
   "to": "2026-11-24",
-  "tickers": 539,
+  "tickers": 549,
+  "rebuilt": true
+ },
+ "analyst_history": {
+  "built_utc": "2026-11-25T08:12:24+00:00",
+  "tickers_with_history": 506,
+  "rows": 173200,
+  "from": "2011-12-08",
   "rebuilt": true
  },
  "vt": {
