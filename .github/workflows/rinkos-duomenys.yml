@@ -41,7 +41,17 @@ jobs:
           git add data
           if git diff --cached --quiet; then
             echo "Pakeitimų nėra"
-          else
-            git commit -m "Duomenys $(date -u +%F)"
-            git push
+            exit 0
           fi
+          git commit -m "Duomenys $(date -u +%F)"
+          # Jei surinkimo metu į repozitoriją kas nors įkėlė failų (pvz., README.md), pirmiausia
+          # pasiimami tie pakeitimai; jei sutampa duomenų failai, palieka šio paleidimo duomenis.
+          for i in 1 2 3 4 5; do
+            if git pull --rebase -X theirs origin main && git push origin HEAD:main; then
+              exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            echo "Įrašyti nepavyko (bandymas $i iš 5), kartojama po 20 s"
+            sleep 20
+          done
+          exit 1
