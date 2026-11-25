@@ -10,7 +10,8 @@ Kas šeštadienį GitHub nemokamai surenka akcijų ir ETF rodiklius iš Yahoo Fi
 - `analitikai_veiksmai.csv` – kiekvienas analitiko veiksmas per 90 d.: data, įmonė, veiksmas (`up` – pakėlė, `down` – sumažino, `init` – pradėjo vertinti, `main`/`reit` – patvirtino), reitingas iš → į, tikslinė kaina iš → į.
 - `uzdarymai.csv` – dienos uždarymo kainos per ~13 mėn.
 - `meta.json` – kada surinkta ir kokios buvo klaidos (`analysts_ok` – kiek akcijų turi analitikų duomenis, `archive` – archyvo būklė).
-- `archyvas/uzdarymai_max.csv.gz` – back testams: visų tikerių (S&P 500, `akcijos.txt`, `etf.txt`, 10 sektorių ETF, SPY, EFA, EEM) koreguotos dienos uždarymo kainos nuo 2000 m. Perkuriamas pirmą kiekvieno mėnesio paleidimą; jei Yahoo tą dieną riboja, paliekamas senas ir kitą dieną bandoma vėl. `archyvas/info.json` – kada sudarytas ir nuo kurios dienos turi duomenų kiekvienas tikeris.
+- `archyvas/uzdarymai_max.csv.gz` – back testams: visų tikerių (S&P 500, `akcijos.txt`, `etf.txt`, 10 sektorių ETF, SPY, EFA, EEM, taip pat IWM, MDY, DIA, TLT, IEF, SHY, BIL, AGG, GLD, VNQ) koreguotos dienos uždarymo kainos nuo 2000 m. Perkuriamas pirmą kiekvieno mėnesio paleidimą arba kai į sąrašus pridedi naują tikerį; jei Yahoo tą dieną riboja, paliekamas senas ir kitą dieną bandoma vėl. `archyvas/info.json` – kada sudarytas ir nuo kurios dienos turi duomenų kiekvienas tikeris.
+- `archyvas/analitikai_istorija.csv.gz` – visa Yahoo analitikų veiksmų istorija visoms akcijoms (kiekvienas reitingo ar tikslinės kainos pakeitimas su data ir įmone) analitikų strategijų testams. Perkuriama kartu su archyvu; `archyvas/analitikai_istorija.json` – santrauka.
 
 ## Kaip įsijungti (~10 min., viskas naršyklėje)
 
