@@ -1,6 +1,6 @@
 # Rinkos duomenys
 
-Kas šeštadienį GitHub nemokamai surenka akcijų ir ETF rodiklius iš Yahoo Finance ir įrašo juos į aplanką `data/`. Claude juos skaito iš `https://raw.githubusercontent.com/<tavo-vardas>/rinkos-duomenys/main/data/`, todėl užklausų limitų nėra.
+Po kiekvienos JAV prekybos dienos (pirmadienį–šeštadienį 03:23 UTC) GitHub nemokamai surenka akcijų ir ETF rodiklius iš Yahoo Finance ir įrašo juos į aplanką `data/`. Claude juos skaito iš `https://raw.githubusercontent.com/<tavo-vardas>/rinkos-duomenys/main/data/`, todėl užklausų limitų nėra.
 
 ## Ką surenka
 
@@ -12,6 +12,9 @@ Kas šeštadienį GitHub nemokamai surenka akcijų ir ETF rodiklius iš Yahoo Fi
 - `meta.json` – kada surinkta ir kokios buvo klaidos (`analysts_ok` – kiek akcijų turi analitikų duomenis, `archive` – archyvo būklė).
 - `archyvas/uzdarymai_max.csv.gz` – back testams: visų tikerių (S&P 500, `akcijos.txt`, `etf.txt`, 10 sektorių ETF, SPY, EFA, EEM, taip pat IWM, MDY, DIA, TLT, IEF, SHY, BIL, AGG, GLD, VNQ) koreguotos dienos uždarymo kainos nuo 2000 m. Perkuriamas pirmą kiekvieno mėnesio paleidimą arba kai į sąrašus pridedi naują tikerį; jei Yahoo tą dieną riboja, paliekamas senas ir kitą dieną bandoma vėl. `archyvas/info.json` – kada sudarytas ir nuo kurios dienos turi duomenų kiekvienas tikeris.
 - `archyvas/analitikai_istorija.csv.gz` – visa Yahoo analitikų veiksmų istorija visoms akcijoms (kiekvienas reitingo ar tikslinės kainos pakeitimas su data ir įmone) analitikų strategijų testams. Perkuriama kartu su archyvu; `archyvas/analitikai_istorija.json` – santrauka.
+- `r6.csv` – R6 strategijos mėnesio sąrašas: 10 S&P 500 akcijų su didžiausiu vidutiniu analitikų tikslinių kainų pakėlimu (%) per 90 d. (`pt_change_mean_pct`, `pt_actions_90d`), paskutinė kaina ir signalo diena. Perskaičiuojamas pirmą mėnesio paleidimą, kai perkuriama analitikų istorija.
+- `r6_istorija.csv` – visų mėnesių R6 sąrašai. Šių akcijų kainos renkamos dar 7 mėn., net jei akcija iškrenta iš S&P 500 – kad būtų galima apskaičiuoti porcijos rezultatą.
+- `archyvas/sp500_sudetis.csv` – S&P 500 sudėtis kiekvieną mėnesį (nuo 2026-11). Po kelerių metų leis daryti back testus be išlikimo šališkumo.
 
 ## Kaip įsijungti (~10 min., viskas naršyklėje)
 
