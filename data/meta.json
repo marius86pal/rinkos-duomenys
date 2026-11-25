@@ -1,29 +1,53 @@
 {
- "generated_utc": "2026-11-25T08:12:24+00:00",
+ "generated_utc": "2026-11-25T11:01:48+00:00",
  "last_price_date": "2026-11-24",
  "source": "Yahoo Finance per yfinance",
  "yfinance": "1.8.0",
  "universe_stocks": 507,
  "universe_etf": 32,
- "priced": 537,
+ "priced": 538,
  "candidates": 182,
  "eps_ok": 182,
  "analysts_ok": 182,
  "analysts_errors": 0,
- "analyst_actions_90d": 1826,
+ "analyst_actions_90d": 1825,
  "archive": {
   "built_utc": "2026-11-25T08:01:52+00:00",
   "from": "2000-01-03",
   "to": "2026-11-24",
   "tickers": 549,
-  "rebuilt": true
+  "rebuilt": false
  },
  "analyst_history": {
   "built_utc": "2026-11-25T08:12:24+00:00",
   "tickers_with_history": 506,
   "rows": 173200,
   "from": "2011-12-08",
-  "rebuilt": true
+  "rebuilt": false
+ },
+ "r6": {
+  "computed": true,
+  "month": "2026-11",
+  "signal_date": "2026-11-24",
+  "in_history": false,
+  "tickers": [
+   "MRNA",
+   "ILMN",
+   "PTC",
+   "MPC",
+   "OKTA",
+   "VLO",
+   "VEEV",
+   "PSX",
+   "ACN",
+   "RVTY"
+  ],
+  "tracked_outside_universe": []
+ },
+ "sp500_log": {
+  "month": "2026-11",
+  "added": true,
+  "tickers": 503
  },
  "vt": {
   "ticker": "VT",
