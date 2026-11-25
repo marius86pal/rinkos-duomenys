@@ -45,6 +45,8 @@ VEIKSMU_D = 90     # kiek dienų analitikų veiksmų rašyti į analitikai_veiks
 ARCHYVO_PRADZIA = "2000-01-01"
 SEKTORIAI = ["XLK", "XLV", "XLF", "XLI", "XLC", "XLU", "XLE", "XLY", "XLP", "XLB"]  # ROT visuma
 LYGINAMIEJI = ["SPY", "EFA", "EEM"]  # ilgesnė istorija nei VT (VT prekiaujamas nuo 2008 m.)
+# Tik archyvui (strategijų testams): mažos ir vidutinės bendrovės, obligacijos, auksas, NT, grynųjų atitikmuo
+ARCHYVO_ETF = ["IWM", "MDY", "DIA", "TLT", "IEF", "SHY", "BIL", "AGG", "GLD", "VNQ"]
 
 AN_STULPELIAI = [
     "ticker", "close", "bhs", "n_ratings", "strong_buy", "buy", "hold", "sell", "strong_sell",
@@ -123,15 +125,22 @@ def _archyvo_santrauka(info: dict, perkurtas: bool) -> dict:
     return out
 
 
-def reikia_archyvo(info_f: Path) -> bool:
-    """Archyvas perkuriamas pirmą kiekvieno mėnesio paleidimą arba jei jo dar nėra."""
+def reikia_archyvo(info_f: Path, tickers: list[str] | None = None) -> bool:
+    """Archyvas perkuriamas pirmą kiekvieno mėnesio paleidimą, jei jo dar nėra,
+    arba jei į visumą pridėta tikerių, kurių anksčiau neprašyta."""
     if not info_f.exists():
         return True
     try:
-        built = str(json.loads(info_f.read_text(encoding="utf-8")).get("built_utc") or "")
+        info = json.loads(info_f.read_text(encoding="utf-8"))
     except Exception:
         return True
-    return built[:7] != dt.datetime.now(dt.timezone.utc).strftime("%Y-%m")
+    if str(info.get("built_utc") or "")[:7] != dt.datetime.now(dt.timezone.utc).strftime("%Y-%m"):
+        return True
+    if tickers:
+        prasyta = set(info.get("requested") or info.get("first_date") or [])
+        if set(tickers) - prasyta:
+            return True
+    return False
 
 
 def archyvas(tickers: list[str]) -> dict:
@@ -146,7 +155,7 @@ def archyvas(tickers: list[str]) -> dict:
             senas = json.loads(info_f.read_text(encoding="utf-8"))
         except Exception:
             senas = {}
-    if failas.exists() and not reikia_archyvo(info_f):
+    if failas.exists() and not reikia_archyvo(info_f, tickers):
         return _archyvo_santrauka(senas, False)
 
     klaidu: list[str] = []
@@ -177,10 +186,81 @@ def archyvas(tickers: list[str]) -> dict:
                         "iš indekso iškritusių ar bankrutavusių bendrovių nėra, todėl akcijų testo "
                         "rezultatai būna per geri",
         "first_date": pirmos,
+        "requested": sorted(tickers),
         "errors": klaidu[:50],
     }
     info_f.write_text(json.dumps(info, ensure_ascii=False, indent=1), encoding="utf-8")
     return _archyvo_santrauka(info, True)
+
+
+def analitiku_istorija(akcijos: list[str]) -> dict:
+    """Visa Yahoo analitikų veiksmų istorija (reitingai ir tikslinės kainos) back testams.
+    Perkuriama kartu su kainų archyvu (pirmą mėnesio paleidimą) arba jei failo dar nėra.
+    Jei daugiau kaip 20 % tikerių nepavyksta, paliekamas senas failas ir kitą dieną bandoma vėl."""
+    kat = DATA / "archyvas"
+    kat.mkdir(parents=True, exist_ok=True)
+    failas, info_f = kat / "analitikai_istorija.csv.gz", kat / "analitikai_istorija.json"
+    senas: dict = {}
+    if info_f.exists():
+        try:
+            senas = json.loads(info_f.read_text(encoding="utf-8"))
+        except Exception:
+            senas = {}
+    santr = lambda i, p: {"built_utc": i.get("built_utc"), "tickers_with_history": i.get("tickers_with_history"),
+                          "rows": i.get("rows"), "from": i.get("from"), "rebuilt": p}
+    if failas.exists() and not reikia_archyvo(info_f, akcijos):
+        return santr(senas, False)
+
+    dalys, nepavyko = [], []
+    for t in akcijos:
+        ud = None
+        for bandymas in range(2):
+            try:
+                ud = yf.Ticker(t).upgrades_downgrades
+                break
+            except Exception as e:
+                if "no upgrade/downgrade history" in str(e).lower():
+                    break                                   # analitikų veiksmų nėra – ne klaida
+                if _ribojimas(e) and bandymas == 0:
+                    time.sleep(60)
+                    continue
+                nepavyko.append(t)
+                break
+        if ud is not None and len(ud):
+            df = ud.copy()
+            idx = pd.to_datetime(df.index)
+            if getattr(idx, "tz", None) is not None:
+                idx = idx.tz_convert(None)
+            dalys.append(pd.DataFrame({
+                "ticker": t, "date": idx.strftime("%Y-%m-%d"),
+                "firm": df.get("Firm"), "action": df.get("Action"),
+                "from_grade": df.get("FromGrade"), "to_grade": df.get("ToGrade"),
+                "pt_action": df.get("priceTargetAction"),
+                "pt_prior": pd.to_numeric(df.get("priorPriceTarget"), errors="coerce") if "priorPriceTarget" in df else None,
+                "pt_current": pd.to_numeric(df.get("currentPriceTarget"), errors="coerce") if "currentPriceTarget" in df else None,
+            }).reset_index(drop=True))
+        time.sleep(PAUZE)
+
+    if failas.exists() and len(nepavyko) > 0.2 * max(len(akcijos), 1):
+        out = santr(senas, False)
+        out["error"] = f"neperkurta: nepavyko {len(nepavyko)} iš {len(akcijos)}"
+        return out
+    ist = pd.concat(dalys, ignore_index=True) if dalys else pd.DataFrame(columns=VEIKSMU_STULPELIAI)
+    ist = ist.reindex(columns=VEIKSMU_STULPELIAI).sort_values(["ticker", "date"], ascending=[True, False])
+    ist.to_csv(failas, index=False, compression={"method": "gzip", "mtime": 0})
+    info = {
+        "built_utc": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+        "tickers_with_history": int(ist["ticker"].nunique()) if len(ist) else 0,
+        "rows": int(len(ist)),
+        "from": str(ist["date"].min()) if len(ist) else None,
+        "note": "Yahoo upgradeDowngradeHistory: kiekvienas analitiko veiksmas (up, down, init, main, reit) su "
+                "data, įmone, reitingu iš → į ir tikslinė kaina iš → į. Visuma – dabartinė S&P 500 sudėtis "
+                "+ akcijos.txt (išlikimo šališkumas).",
+        "failed": nepavyko[:100],
+        "requested": sorted(akcijos),
+    }
+    info_f.write_text(json.dumps(info, ensure_ascii=False, indent=1), encoding="utf-8")
+    return santr(info, True)
 
 
 def santrauka(cl: pd.DataFrame) -> pd.DataFrame:
@@ -448,10 +528,15 @@ def main() -> None:
         an_ok, an_err = 0, 0
 
     try:   # archyvas – po kasdienių failų, kad jo nesėkmė jų nepaveiktų
-        arch = archyvas(visi)
+        arch = archyvas(sorted(set(visi) | set(ARCHYVO_ETF)))
     except Exception as e:
         arch = {"rebuilt": False, "error": f"{e}"[:300]}
     print(f"Archyvas: {json.dumps(arch, ensure_ascii=False)}", flush=True)
+    try:
+        istor = analitiku_istorija(sorted(akcijos))
+    except Exception as e:
+        istor = {"rebuilt": False, "error": f"{e}"[:300]}
+    print(f"Analitikų istorija: {json.dumps(istor, ensure_ascii=False)}", flush=True)
     meta = {
         "generated_utc": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "last_price_date": str(cl.index[-1].date()) if not cl.empty else None,
@@ -466,6 +551,7 @@ def main() -> None:
         "analysts_errors": an_err,     # tikeriai, kuriems analitikų duomenų gauti nepavyko
         "analyst_actions_90d": int(len(veiks)),
         "archive": arch,               # data/archyvas/: kainos nuo 2000 m. back testams
+        "analyst_history": istor,      # data/archyvas/analitikai_istorija.csv.gz: visi analitikų veiksmai
         "vt": vt[0] if vt else None,
         "errors": klaidos[:100],
     }
