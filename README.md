@@ -14,6 +14,8 @@ Po kiekvienos JAV prekybos dienos (pirmadienį–šeštadienį 03:23 UTC) GitHub
 - `archyvas/analitikai_istorija.csv.gz` – visa Yahoo analitikų veiksmų istorija visoms akcijoms (kiekvienas reitingo ar tikslinės kainos pakeitimas su data ir įmone) analitikų strategijų testams. Perkuriama kartu su archyvu; `archyvas/analitikai_istorija.json` – santrauka.
 - `r6.csv` – R6 strategijos mėnesio sąrašas: 10 S&P 500 akcijų su didžiausiu vidutiniu analitikų tikslinių kainų pakėlimu (%) per 90 d. (`pt_change_mean_pct`, `pt_actions_90d`), paskutinė kaina ir signalo diena. Perskaičiuojamas pirmą mėnesio paleidimą, kai perkuriama analitikų istorija.
 - `r6_istorija.csv` – visų mėnesių R6 sąrašai. Šių akcijų kainos renkamos dar 7 mėn., net jei akcija iškrenta iš S&P 500 – kad būtų galima apskaičiuoti porcijos rezultatą.
+- `m1.csv` – M1 strategijos mėnesio sąrašas (tai, ką perkame): R6 kandidatai, atmetus akcijas, kurių paskutinė tikslinės kainos naujiena senesnė nei 40 d., kurios arčiau nei 1,7 % iki 52 sav. aukštumos arba kurių tikslinę kainą per 90 d. paskelbė mažiau nei 4 skirtingos analitikų įmonės (`firms_90d`, `last_action_days`, `to_52w_high_pct`, `after_filters`). Perskaičiuojamas kartu su `r6.csv`; `r6.csv` lieka M1 patikrai (sąrašas be filtrų).
+- `m1_istorija.csv` – visų mėnesių M1 sąrašai. Šių akcijų kainos taip pat renkamos dar 7 mėn., net jei akcija iškrenta iš S&P 500.
 - `archyvas/sp500_sudetis.csv` – S&P 500 sudėtis kiekvieną mėnesį (nuo 2026-11). Po kelerių metų leis daryti back testus be išlikimo šališkumo.
 
 ## Kaip įsijungti (~10 min., viskas naršyklėje)
