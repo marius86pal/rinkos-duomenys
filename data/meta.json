@@ -1,16 +1,16 @@
 {
- "generated_utc": "2026-11-25T11:08:50+00:00",
- "last_price_date": "2026-11-24",
+ "generated_utc": "2026-11-26T04:34:04+00:00",
+ "last_price_date": "2026-11-25",
  "source": "Yahoo Finance per yfinance",
  "yfinance": "1.8.0",
  "universe_stocks": 507,
  "universe_etf": 32,
  "priced": 538,
- "candidates": 182,
- "eps_ok": 182,
- "analysts_ok": 182,
+ "candidates": 203,
+ "eps_ok": 202,
+ "analysts_ok": 202,
  "analysts_errors": 0,
- "analyst_actions_90d": 1825,
+ "analyst_actions_90d": 2077,
  "archive": {
   "built_utc": "2026-11-25T08:01:52+00:00",
   "from": "2000-01-03",
@@ -26,10 +26,9 @@
   "rebuilt": false
  },
  "r6": {
-  "computed": true,
+  "computed": false,
   "month": "2026-11",
   "signal_date": "2026-11-24",
-  "in_history": false,
   "tickers": [
    "MRNA",
    "ILMN",
@@ -46,19 +45,18 @@
  },
  "sp500_log": {
   "month": "2026-11",
-  "added": true,
-  "tickers": 503
+  "added": false
  },
  "vt": {
   "ticker": "VT",
-  "date": "2026-11-24",
-  "close": 147.56,
-  "ret_1m": -5.8,
-  "ret_3m": -8.04,
-  "ret_6m": -5.53,
-  "ret_1y": 10.18,
-  "from_100d_high": -8.9,
-  "from_52w_high": -8.9
+  "date": "2026-11-25",
+  "close": 147.54,
+  "ret_1m": -6.44,
+  "ret_3m": -8.45,
+  "ret_6m": -5.96,
+  "ret_1y": 8.85,
+  "from_100d_high": -8.91,
+  "from_52w_high": -8.91
  },
  "errors": []
 }
