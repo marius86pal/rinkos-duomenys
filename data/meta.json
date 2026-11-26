@@ -1,16 +1,16 @@
 {
- "generated_utc": "2026-11-26T04:34:04+00:00",
+ "generated_utc": "2026-11-26T10:42:18+00:00",
  "last_price_date": "2026-11-25",
  "source": "Yahoo Finance per yfinance",
  "yfinance": "1.8.0",
  "universe_stocks": 507,
  "universe_etf": 32,
- "priced": 538,
+ "priced": 537,
  "candidates": 203,
  "eps_ok": 202,
  "analysts_ok": 202,
  "analysts_errors": 0,
- "analyst_actions_90d": 2077,
+ "analyst_actions_90d": 2076,
  "archive": {
   "built_utc": "2026-11-25T08:01:52+00:00",
   "from": "2000-01-03",
@@ -42,6 +42,25 @@
    "RVTY"
   ],
   "tracked_outside_universe": []
+ },
+ "m1": {
+  "computed": true,
+  "month": "2026-11",
+  "signal_date": "2026-11-25",
+  "in_history": false,
+  "after_filters": 166,
+  "tickers": [
+   "MRNA",
+   "ILMN",
+   "MPC",
+   "VLO",
+   "PSX",
+   "ACN",
+   "RVTY",
+   "HUM",
+   "VEEV",
+   "SWKS"
+  ]
  },
  "sp500_log": {
   "month": "2026-11",
