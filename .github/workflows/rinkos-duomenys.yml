@@ -12,6 +12,11 @@ on:
       - cron: "23 3 * * 1-6" # pirmadienį–šeštadienį 03:23 UTC: po kiekvienos JAV prekybos dienos ir pirmadienio rytą,
                              # kad R6 sąrašas būtų pirmą mėnesio prekybos dieną, net jei mėnuo prasideda sekmadienį ar pirmadienį
   workflow_dispatch:         # galima paleisti ranka: Actions → Rinkos duomenys → Run workflow
+    inputs:
+      perkurti_analitikus:
+        description: "Perkurti visą analitikų istoriją dabar (pvz., kai Yahoo vėl atnaujina analitikų duomenis)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -34,6 +39,8 @@ jobs:
 
       - name: Surinkti duomenis
         run: .venv/bin/python surinkti.py
+        env:
+          PERKURTI_ANALITIKUS: ${{ github.event.inputs.perkurti_analitikus }}
 
       - name: Įrašyti į repozitoriją
         run: |
