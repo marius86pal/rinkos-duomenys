@@ -14,7 +14,8 @@ Failai:
                       kandidatams kaip pelnas.csv)
   data/analitikai_veiksmai.csv  kiekvienas analitiko veiksmas per 90 d.: data, įmonė,
                       reitingas iš → į, tikslinė kaina iš → į
-  data/meta.json      kada sugeneruota, kiek tikerių, klaidos
+  data/meta.json      kada sugeneruota, kiek tikerių, klaidos; analyst_last_action – naujausio analitikų veiksmo data
+                      (jei senesnė nei 7 d. – klaida „analitikų veiksmai pasenę“)
   data/archyvas/uzdarymai_max.csv.gz  koreguotos dienos uždarymo kainos nuo 2000 m. (back testams);
                       perkuriamas pirmą kiekvieno mėnesio paleidimą
   data/archyvas/info.json  archyvo data, laikotarpis, kiekvieno tikerio pirmoji diena
@@ -31,6 +32,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import os
 import time
 from pathlib import Path
 
@@ -53,6 +55,7 @@ LYGINAMIEJI = ["SPY", "EFA", "EEM"]  # ilgesnė istorija nei VT (VT prekiaujamas
 ARCHYVO_ETF = ["IWM", "MDY", "DIA", "TLT", "IEF", "SHY", "BIL", "AGG", "GLD", "VNQ"]
 BUVE_NARIAI_MEN = 7  # kiek mėnesių rinkti iš S&P 500 iškritusių akcijų kainas (porcija laikoma 6 mėn.)
 SENI_SARASAI = ("r6.csv", "r6_istorija.csv", "m1.csv", "m1_istorija.csv")  # nebeskaičiuojami – šalinami
+SENA_D = 7           # po kiek dienų be naujų analitikų veiksmų duomenys laikomi pasenusiais
 
 AN_STULPELIAI = [
     "ticker", "close", "bhs", "n_ratings", "strong_buy", "buy", "hold", "sell", "strong_sell",
@@ -199,9 +202,34 @@ def archyvas(tickers: list[str]) -> dict:
     return _archyvo_santrauka(info, True)
 
 
-def analitiku_istorija(akcijos: list[str]) -> dict:
+def paskutinis_istorijoje() -> str | None:
+    """Naujausio analitikų veiksmo data esamoje istorijoje (archyvas/analitikai_istorija.csv.gz)."""
+    f = DATA / "archyvas" / "analitikai_istorija.csv.gz"
+    if not f.exists():
+        return None
+    try:
+        d = pd.read_csv(f, usecols=["date"])["date"].dropna().astype(str)
+        return str(d.max()) if len(d) else None
+    except Exception:
+        return None
+
+
+def analitiku_bukle(kasdien: str | None, istorijoje: str | None, siandien: dt.date,
+                    rankinis: bool) -> tuple[bool, str | None]:
+    """Ar perkurti analitikų istoriją dar šį paleidimą ir kodėl: rankiniu būdu (Run workflow) arba kai istorija pasenusi
+    (> SENA_D d.), o šios dienos Yahoo atsakymuose jau yra naujesnių veiksmų (Yahoo duomenys vėl atnaujinami)."""
+    if rankinis:
+        return True, "rankiniu būdu"
+    if kasdien and istorijoje and kasdien > istorijoje and \
+            (siandien - dt.date.fromisoformat(istorijoje[:10])).days > SENA_D:
+        return True, f"Yahoo vėl atnaujina analitikų duomenis (istorijoje paskutinis {istorijoje}, šiandien gauta {kasdien})"
+    return False, None
+
+
+def analitiku_istorija(akcijos: list[str], priverstinai: bool = False, priezastis: str | None = None) -> dict:
     """Visa Yahoo analitikų veiksmų istorija (reitingai ir tikslinės kainos) back testams.
-    Perkuriama kartu su kainų archyvu (pirmą mėnesio paleidimą) arba jei failo dar nėra.
+    Perkuriama kartu su kainų archyvu (pirmą mėnesio paleidimą), jei failo dar nėra arba `priverstinai`
+    (rankiniu būdu ar Yahoo duomenims atsinaujinus – žr. analitiku_bukle).
     Jei daugiau kaip 20 % tikerių nepavyksta, paliekamas senas failas ir kitą dieną bandoma vėl."""
     kat = DATA / "archyvas"
     kat.mkdir(parents=True, exist_ok=True)
@@ -213,8 +241,9 @@ def analitiku_istorija(akcijos: list[str]) -> dict:
         except Exception:
             senas = {}
     santr = lambda i, p: {"built_utc": i.get("built_utc"), "tickers_with_history": i.get("tickers_with_history"),
-                          "rows": i.get("rows"), "from": i.get("from"), "rebuilt": p}
-    if failas.exists() and not reikia_archyvo(info_f, akcijos):
+                          "rows": i.get("rows"), "from": i.get("from"), "last_action": i.get("last_action"),
+                          "rebuilt": p, **({"reason": i["reason"]} if p and i.get("reason") else {})}
+    if failas.exists() and not priverstinai and not reikia_archyvo(info_f, akcijos):
         return santr(senas, False)
 
     dalys, nepavyko = [], []
@@ -250,6 +279,8 @@ def analitiku_istorija(akcijos: list[str]) -> dict:
     if failas.exists() and len(nepavyko) > 0.2 * max(len(akcijos), 1):
         out = santr(senas, False)
         out["error"] = f"neperkurta: nepavyko {len(nepavyko)} iš {len(akcijos)}"
+        if priezastis:
+            out["reason"] = priezastis
         return out
     ist = pd.concat(dalys, ignore_index=True) if dalys else pd.DataFrame(columns=VEIKSMU_STULPELIAI)
     ist = ist.reindex(columns=VEIKSMU_STULPELIAI).sort_values(["ticker", "date"], ascending=[True, False])
@@ -259,6 +290,8 @@ def analitiku_istorija(akcijos: list[str]) -> dict:
         "tickers_with_history": int(ist["ticker"].nunique()) if len(ist) else 0,
         "rows": int(len(ist)),
         "from": str(ist["date"].min()) if len(ist) else None,
+        "last_action": str(ist["date"].max()) if len(ist) else None,
+        "reason": priezastis,
         "note": "Yahoo upgradeDowngradeHistory: kiekvienas analitiko veiksmas (up, down, init, main, reit) su "
                 "data, įmone, reitingu iš → į ir tikslinė kaina iš → į. Visuma – dabartinė S&P 500 sudėtis "
                 "+ akcijos.txt (išlikimo šališkumas).",
@@ -578,11 +611,22 @@ def main() -> None:
     except Exception as e:
         arch = {"rebuilt": False, "error": f"{e}"[:300]}
     print(f"Archyvas: {json.dumps(arch, ensure_ascii=False)}", flush=True)
+    siandien = dt.datetime.now(dt.timezone.utc).date()
+    kasdien_pask = str(veiks["date"].dropna().astype(str).max()) if len(veiks) else None
+    ist_pask = paskutinis_istorijoje()
+    rankinis = os.environ.get("PERKURTI_ANALITIKUS", "").strip().lower() in ("1", "true", "taip", "yes")
+    perkurti, priezastis = analitiku_bukle(kasdien_pask, ist_pask, siandien, rankinis)
     try:
-        istor = analitiku_istorija(sorted(akcijos))
+        istor = analitiku_istorija(sorted(akcijos), priverstinai=perkurti, priezastis=priezastis)
     except Exception as e:
         istor = {"rebuilt": False, "error": f"{e}"[:300]}
+    if not istor.get("last_action"):
+        istor["last_action"] = paskutinis_istorijoje()
     print(f"Analitikų istorija: {json.dumps(istor, ensure_ascii=False)}", flush=True)
+    an_pask = max([x for x in (kasdien_pask, istor.get("last_action")) if x], default=None)
+    if an_pask is None or (siandien - dt.date.fromisoformat(an_pask[:10])).days > SENA_D:
+        klaidos.append(f"analitikų veiksmai pasenę: naujausias {an_pask or 'nėra'} "
+                       f"(Yahoo nebeatnaujina upgrades_downgrades)")
     try:
         pasalinta = pasalinti_senus_sarasus()
     except Exception as e:
@@ -604,6 +648,7 @@ def main() -> None:
         "analysts_ok": an_ok,          # tikeriai su analitikų reitingais ar tikslinėmis kainomis
         "analysts_errors": an_err,     # tikeriai, kuriems analitikų duomenų gauti nepavyko
         "analyst_actions_90d": int(len(veiks)),
+        "analyst_last_action": an_pask,  # naujausio analitikų veiksmo data (šios dienos atsakymai ir istorija)
         "archive": arch,               # data/archyvas/: kainos nuo 2000 m. back testams
         "analyst_history": istor,      # data/archyvas/analitikai_istorija.csv.gz: visi analitikų veiksmai
         "former_members_tracked": sorted(buve),   # iš S&P 500 iškritusios akcijos, kurių kainos dar renkamos
