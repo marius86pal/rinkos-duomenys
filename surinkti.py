@@ -18,16 +18,10 @@ Failai:
   data/archyvas/uzdarymai_max.csv.gz  koreguotos dienos uždarymo kainos nuo 2000 m. (back testams);
                       perkuriamas pirmą kiekvieno mėnesio paleidimą
   data/archyvas/info.json  archyvo data, laikotarpis, kiekvieno tikerio pirmoji diena
-  data/r6.csv         R6 strategijos 10 akcijų sąrašas (perskaičiuojamas, kai perkuriama analitikų istorija –
-                      pirmą mėnesio paleidimą; signalo diena – paskutinė prekybos diena prieš tai)
-  data/r6_istorija.csv  visų mėnesių R6 sąrašai; jų akcijų kainos renkamos 7 mėn., net jei akcija
-                      iškrenta iš S&P 500 (porcijų rezultatams)
-  data/m1.csv         M1 strategijos sąrašas – tai, ką perkame: R6 kandidatai be akcijų, kurių paskutinė naujiena
-                      senesnė nei 40 d., kurios arčiau nei 1,7 % iki 52 sav. aukštumos arba kurių tikslinę kainą
-                      per 90 d. paskelbė mažiau nei 4 įmonės (perskaičiuojamas kartu su r6.csv)
-  data/m1_istorija.csv  visų mėnesių M1 sąrašai; jų akcijų kainos renkamos 7 mėn., net jei akcija
-                      iškrenta iš S&P 500 (porcijų rezultatams)
-  data/archyvas/sp500_sudetis.csv  S&P 500 sudėtis kiekvieną mėnesį (ateities testams be išlikimo šališkumo)
+  data/archyvas/sp500_sudetis.csv  S&P 500 sudėtis kiekvieną mėnesį (ateities testams be išlikimo šališkumo);
+                      pagal ją dar 7 mėn. renkamos iš indekso iškritusių akcijų kainos (porcijų rezultatams)
+
+Strategijų sąrašų (kurias akcijas pirkti) GitHub neskaičiuoja – tik renka duomenis.
 
 Visuma: S&P 500 + akcijos.txt (papildomos akcijos, ADR, ES akcijos Yahoo formatu)
         + etf.txt (ETF – tik kainos). VT visada įtraukiamas kaip lyginamasis.
@@ -38,7 +32,6 @@ from __future__ import annotations
 import datetime as dt
 import json
 import time
-import zlib
 from pathlib import Path
 
 import pandas as pd
@@ -58,12 +51,8 @@ SEKTORIAI = ["XLK", "XLV", "XLF", "XLI", "XLC", "XLU", "XLE", "XLY", "XLP", "XLB
 LYGINAMIEJI = ["SPY", "EFA", "EEM"]  # ilgesnė istorija nei VT (VT prekiaujamas nuo 2008 m.)
 # Tik archyvui (strategijų testams): mažos ir vidutinės bendrovės, obligacijos, auksas, NT, grynųjų atitikmuo
 ARCHYVO_ETF = ["IWM", "MDY", "DIA", "TLT", "IEF", "SHY", "BIL", "AGG", "GLD", "VNQ"]
-R6_N = 10            # R6 strategija: akcijų skaičius mėnesio porcijoje
-R6_LANGAS_D = 90     # R6: tikslinių kainų pokyčių langas, d.
-R6_SEKTI_MEN = 7     # R6: kiek mėnesių rinkti porcijų akcijų kainas (porcija laikoma 6 mėn.)
-M1_SVIEZUMAS_D = 40  # M1: paskutinis tikslinės kainos veiksmas ne senesnis nei 40 d. (B 40 d.)
-M1_AUKSTUMA = 0.983  # M1: atmesti, jei uždarymas ÷ 252 d. maksimumas > 0,983 (F5)
-M1_FIRMOS = 4        # M1: veiksmus per 90 d. paskelbė ≥ 4 skirtingos analitikų įmonės
+BUVE_NARIAI_MEN = 7  # kiek mėnesių rinkti iš S&P 500 iškritusių akcijų kainas (porcija laikoma 6 mėn.)
+SENI_SARASAI = ("r6.csv", "r6_istorija.csv", "m1.csv", "m1_istorija.csv")  # nebeskaičiuojami – šalinami
 
 AN_STULPELIAI = [
     "ticker", "close", "bhs", "n_ratings", "strong_buy", "buy", "hold", "sell", "strong_sell",
@@ -510,143 +499,30 @@ def pelnas(tickers: list[str], kainos: dict | None = None
     return pd.DataFrame(rows), an, pd.DataFrame(veiksmai, columns=VEIKSMU_STULPELIAI)
 
 
-def r6_sarasas(cl: pd.DataFrame, ist: pd.DataFrame, nariai: set[str], n: int = R6_N) -> pd.DataFrame:
-    """R6 (back testas 2012–2026, įgūdis r6-strategija): dabartinės S&P 500 akcijos su ≥ 240 kainų iš paskutinių
-    252 d.; analitikų veiksmai per 90 d. iki signalo dienos su ankstesne ir nauja tiksline kaina > 0; pokytis
-    apribotas [−50 %, +100 %]; reikia ≥ 3 veiksmų ir vidurkio > 0; n didžiausių vidurkių."""
-    s_data = cl.index[-1]
-    pa = cl[[c for c in cl.columns if c in nariai]]
-    ok = (pa.iloc[-252:].notna().sum() >= 240) & pa.iloc[-1].notna()
-    tick = set(ok[ok].index)
-    d = ist[ist["ticker"].isin(tick)].copy()
-    d["date"] = pd.to_datetime(d["date"])
-    d["pt_prior"] = pd.to_numeric(d["pt_prior"], errors="coerce")
-    d["pt_current"] = pd.to_numeric(d["pt_current"], errors="coerce")
-    w = d[(d["date"] > s_data - pd.Timedelta(days=R6_LANGAS_D)) & (d["date"] <= s_data)]
-    m = w[(w["pt_prior"] > 0) & (w["pt_current"] > 0)]
-    chg = (m["pt_current"] / m["pt_prior"] - 1).clip(-0.5, 1.0)
-    g = chg.groupby(m["ticker"])
-    q = pd.DataFrame({"pt_change_mean_pct": g.mean() * 100, "pt_actions_90d": g.size()})
-    q = q[(q["pt_actions_90d"] >= 3) & (q["pt_change_mean_pct"] > 0)].copy()
-    q["tb"] = [zlib.crc32(f"{t}|{s_data.date()}".encode()) for t in q.index]
-    q = q.sort_values(["pt_change_mean_pct", "tb"], ascending=[False, True]).head(n)
-    out = pd.DataFrame({"rank": range(1, len(q) + 1), "ticker": q.index,
-                        "pt_change_mean_pct": q["pt_change_mean_pct"].round(2).to_numpy(),
-                        "pt_actions_90d": q["pt_actions_90d"].to_numpy(),
-                        "close": [round(float(pa[t].iloc[-1]), 4) for t in q.index]})
-    out["signal_date"] = str(s_data.date())
-    out["eligible"] = len(tick)
-    return out
+def buve_nariai() -> set[str]:
+    """Akcijos, per paskutinius BUVE_NARIAI_MEN mėnesių buvusios S&P 500 (archyvas/sp500_sudetis.csv). Jų kainos renkamos,
+    net jei akcija iš indekso iškrito, kad būtų galima apskaičiuoti laikomų porcijų rezultatą."""
+    f = DATA / "archyvas" / "sp500_sudetis.csv"
+    if not f.exists():
+        return set()
+    riba = (pd.Period(dt.datetime.now(dt.timezone.utc).strftime("%Y-%m"), freq="M") - BUVE_NARIAI_MEN).strftime("%Y-%m")
+    try:
+        h = pd.read_csv(f)
+        return set(h.loc[h["month"].astype(str) >= riba, "ticker"].astype(str))
+    except Exception as e:
+        klaidos.append(f"sp500_sudetis.csv: {e}"[:200])
+        return set()
 
 
-def m1_sarasas(cl: pd.DataFrame, ist: pd.DataFrame, nariai: set[str], n: int = R6_N) -> pd.DataFrame:
-    """M1 (įgūdis m1-strategija; back testas 2012-06 – 2025-12, 13 ratas C04): R6 kandidatai (≥ 3 veiksmai per 90 d.,
-    vidurkis > 0), atmetus akcijas, kurių paskutinis veiksmas senesnis nei 40 d., kurių uždarymas ÷ 252 d. maksimumas
-    > 0,983 arba kurių veiksmus paskelbė mažiau nei 4 skirtingos įmonės; n didžiausių vidurkių (jei liko mažiau – visos)."""
-    s_data = cl.index[-1]
-    pa = cl[[c for c in cl.columns if c in nariai]]
-    ok = (pa.iloc[-252:].notna().sum() >= 240) & pa.iloc[-1].notna()
-    tick = set(ok[ok].index)
-    d = ist[ist["ticker"].isin(tick)].copy()
-    d["date"] = pd.to_datetime(d["date"])
-    d["pt_prior"] = pd.to_numeric(d["pt_prior"], errors="coerce")
-    d["pt_current"] = pd.to_numeric(d["pt_current"], errors="coerce")
-    w = d[(d["date"] > s_data - pd.Timedelta(days=R6_LANGAS_D)) & (d["date"] <= s_data)]
-    m = w[(w["pt_prior"] > 0) & (w["pt_current"] > 0)]
-    chg = (m["pt_current"] / m["pt_prior"] - 1).clip(-0.5, 1.0)
-    g = chg.groupby(m["ticker"])
-    q = pd.DataFrame({"pt_change_mean_pct": g.mean() * 100, "pt_actions_90d": g.size(),
-                      "firms_90d": m.groupby("ticker")["firm"].nunique(),
-                      "last_action_days": (s_data - m["date"]).dt.days.groupby(m["ticker"]).min()})
-    q = q[(q["pt_actions_90d"] >= 3) & (q["pt_change_mean_pct"] > 0)].copy()
-    kandidatu = len(q)
-    h52 = (pa.iloc[-1] / pa.iloc[-252:].max()).reindex(q.index)
-    q["to_52w_high_pct"] = (h52 - 1) * 100
-    q = q[(q["last_action_days"] <= M1_SVIEZUMAS_D) & ~(h52 > M1_AUKSTUMA) & (q["firms_90d"] >= M1_FIRMOS)].copy()
-    q["tb"] = [zlib.crc32(f"{t}|{s_data.date()}".encode()) for t in q.index]
-    q = q.sort_values(["pt_change_mean_pct", "tb"], ascending=[False, True])
-    po_filtru = len(q)
-    q = q.head(n)
-    out = pd.DataFrame({"rank": range(1, len(q) + 1), "ticker": q.index,
-                        "pt_change_mean_pct": q["pt_change_mean_pct"].round(2).to_numpy(),
-                        "pt_actions_90d": q["pt_actions_90d"].to_numpy(),
-                        "firms_90d": q["firms_90d"].to_numpy(),
-                        "last_action_days": q["last_action_days"].to_numpy(),
-                        "to_52w_high_pct": q["to_52w_high_pct"].round(2).to_numpy(),
-                        "close": [round(float(pa[t].iloc[-1]), 4) for t in q.index]})
-    out["signal_date"] = str(s_data.date())
-    out["eligible"] = len(tick)
-    out["candidates"] = kandidatu
-    out["after_filters"] = po_filtru
-    return out
-
-
-def r6_sekami() -> set[str]:
-    """Paskutinių R6_SEKTI_MEN mėnesių R6 ir M1 akcijos – jų kainos renkamos, net jei akcija iškrenta iš S&P 500."""
-    riba = (pd.Period(dt.datetime.now(dt.timezone.utc).strftime("%Y-%m"), freq="M") - R6_SEKTI_MEN).strftime("%Y-%m")
-    out: set[str] = set()
-    for vardas in ("r6_istorija.csv", "m1_istorija.csv"):
+def pasalinti_senus_sarasus() -> list[str]:
+    """Strategijų sąrašų GitHub nebeskaičiuoja (nuo 2026-11-27 – tik duomenys), todėl seni sąrašų failai pašalinami."""
+    out = []
+    for vardas in SENI_SARASAI:
         f = DATA / vardas
-        if not f.exists():
-            continue
-        try:
-            h = pd.read_csv(f)
-            out |= set(h.loc[h["month"].astype(str) >= riba, "ticker"].astype(str))
-        except Exception as e:
-            klaidos.append(f"{vardas}: {e}")
+        if f.exists():
+            f.unlink()
+            out.append(vardas)
     return out
-
-
-def r6_atnaujinti(cl: pd.DataFrame, nariai: set[str], perkurta: bool) -> dict:
-    """R6 sąrašas perskaičiuojamas, kai šį paleidimą perkurta analitikų istorija (pirmą mėnesio paleidimą),
-    arba jei data/r6.csv dar nėra. Į r6_istorija.csv rašomi tik mėnesio perkūrimo sąrašai."""
-    f_ist = DATA / "archyvas" / "analitikai_istorija.csv.gz"
-    f_now, f_hist = DATA / "r6.csv", DATA / "r6_istorija.csv"
-    if f_now.exists() and not perkurta:
-        old = pd.read_csv(f_now)
-        return {"computed": False, "month": str(old["month"].iloc[0]) if len(old) else None,
-                "signal_date": str(old["signal_date"].iloc[0]) if len(old) else None,
-                "tickers": old["ticker"].astype(str).tolist()}
-    if cl.empty or not f_ist.exists() or not nariai:
-        return {"computed": False, "error": "nėra kainų, analitikų istorijos arba S&P 500 sąrašo"}
-    df = r6_sarasas(cl, pd.read_csv(f_ist), nariai)
-    if df.empty:
-        return {"computed": False, "error": "nė viena akcija neatitiko sąlygų – senas sąrašas paliktas"}
-    menuo = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m")
-    df.insert(0, "month", menuo)
-    df.to_csv(f_now, index=False)
-    if perkurta:
-        h = pd.read_csv(f_hist) if f_hist.exists() else pd.DataFrame(columns=df.columns)
-        h = pd.concat([h[h["month"].astype(str) != menuo], df], ignore_index=True)
-        h.to_csv(f_hist, index=False)
-    return {"computed": True, "month": menuo, "signal_date": str(df["signal_date"].iloc[0]),
-            "in_history": perkurta, "tickers": df["ticker"].tolist()}
-
-
-def m1_atnaujinti(cl: pd.DataFrame, nariai: set[str], perkurta: bool) -> dict:
-    """M1 sąrašas perskaičiuojamas kartu su R6: kai šį paleidimą perkurta analitikų istorija (pirmą mėnesio
-    paleidimą) arba jei data/m1.csv dar nėra. Į m1_istorija.csv rašomi tik mėnesio perkūrimo sąrašai."""
-    f_ist = DATA / "archyvas" / "analitikai_istorija.csv.gz"
-    f_now, f_hist = DATA / "m1.csv", DATA / "m1_istorija.csv"
-    if f_now.exists() and not perkurta:
-        old = pd.read_csv(f_now)
-        return {"computed": False, "month": str(old["month"].iloc[0]) if len(old) else None,
-                "signal_date": str(old["signal_date"].iloc[0]) if len(old) else None,
-                "tickers": old["ticker"].astype(str).tolist()}
-    if cl.empty or not f_ist.exists() or not nariai:
-        return {"computed": False, "error": "nėra kainų, analitikų istorijos arba S&P 500 sąrašo"}
-    df = m1_sarasas(cl, pd.read_csv(f_ist), nariai)
-    if df.empty:
-        return {"computed": False, "error": "nė viena akcija neatitiko M1 sąlygų – senas sąrašas paliktas"}
-    menuo = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m")
-    df.insert(0, "month", menuo)
-    df.to_csv(f_now, index=False)
-    if perkurta:
-        h = pd.read_csv(f_hist) if f_hist.exists() else pd.DataFrame(columns=df.columns)
-        h = pd.concat([h[h["month"].astype(str) != menuo], df], ignore_index=True)
-        h.to_csv(f_hist, index=False)
-    return {"computed": True, "month": menuo, "signal_date": str(df["signal_date"].iloc[0]),
-            "in_history": perkurta, "after_filters": int(df["after_filters"].iloc[0]), "tickers": df["ticker"].tolist()}
 
 
 def sudeties_zurnalas(sp: list[str]) -> dict:
@@ -666,8 +542,8 @@ def main() -> None:
     sp = sp500()
     akcijos = set(sp) | set(skaityti_sarasa("akcijos.txt"))
     etf = set(skaityti_sarasa("etf.txt")) | {BENCH} | set(SEKTORIAI) | set(LYGINAMIEJI)
-    r6_kainos = r6_sekami() - akcijos - etf          # R6 porcijų akcijos, iškritusios iš visumos
-    visi = sorted(akcijos | etf | r6_kainos)
+    buve = buve_nariai() - akcijos - etf              # iš S&P 500 iškritusios akcijos – kainos dar 7 mėn.
+    visi = sorted(akcijos | etf | buve)
     print(f"Visuma: {len(akcijos)} akcijų, {len(etf)} ETF", flush=True)
 
     cl = uzdarymai(visi)
@@ -708,16 +584,9 @@ def main() -> None:
         istor = {"rebuilt": False, "error": f"{e}"[:300]}
     print(f"Analitikų istorija: {json.dumps(istor, ensure_ascii=False)}", flush=True)
     try:
-        r6 = r6_atnaujinti(cl, set(sp), bool(istor.get("rebuilt")))
+        pasalinta = pasalinti_senus_sarasus()
     except Exception as e:
-        r6 = {"computed": False, "error": f"{e}"[:300]}
-    r6["tracked_outside_universe"] = sorted(r6_kainos)
-    print(f"R6: {json.dumps(r6, ensure_ascii=False)}", flush=True)
-    try:
-        m1 = m1_atnaujinti(cl, set(sp), bool(istor.get("rebuilt")))
-    except Exception as e:
-        m1 = {"computed": False, "error": f"{e}"[:300]}
-    print(f"M1: {json.dumps(m1, ensure_ascii=False)}", flush=True)
+        pasalinta = [f"klaida: {e}"[:200]]
     try:
         sud = sudeties_zurnalas(sp)
     except Exception as e:
@@ -737,8 +606,8 @@ def main() -> None:
         "analyst_actions_90d": int(len(veiks)),
         "archive": arch,               # data/archyvas/: kainos nuo 2000 m. back testams
         "analyst_history": istor,      # data/archyvas/analitikai_istorija.csv.gz: visi analitikų veiksmai
-        "r6": r6,                      # data/r6.csv: R6 (be filtrų) mėnesio sąrašas – M1 patikrai
-        "m1": m1,                      # data/m1.csv: M1 strategijos mėnesio sąrašas (tai, ką perkame)
+        "former_members_tracked": sorted(buve),   # iš S&P 500 iškritusios akcijos, kurių kainos dar renkamos
+        "removed_old_lists": pasalinta,           # šį paleidimą pašalinti seni strategijų sąrašų failai
         "sp500_log": sud,              # data/archyvas/sp500_sudetis.csv: mėnesinė S&P 500 sudėtis
         "vt": vt[0] if vt else None,
         "errors": klaidos[:100],
