@@ -1,16 +1,16 @@
 {
- "generated_utc": "2026-11-27T10:12:02+00:00",
- "last_price_date": "2026-11-25",
+ "generated_utc": "2026-11-27T19:22:04+00:00",
+ "last_price_date": "2026-11-27",
  "source": "Yahoo Finance per yfinance",
  "yfinance": "1.8.0",
  "universe_stocks": 507,
  "universe_etf": 32,
- "priced": 538,
- "candidates": 203,
- "eps_ok": 202,
- "analysts_ok": 202,
+ "priced": 537,
+ "candidates": 211,
+ "eps_ok": 210,
+ "analysts_ok": 210,
  "analysts_errors": 0,
- "analyst_actions_90d": 2048,
+ "analyst_actions_90d": 2133,
  "archive": {
   "built_utc": "2026-11-25T08:01:52+00:00",
   "from": "2000-01-03",
@@ -26,24 +26,21 @@
   "rebuilt": false
  },
  "former_members_tracked": [],
- "removed_old_lists": [
-  "r6.csv",
-  "m1.csv"
- ],
+ "removed_old_lists": [],
  "sp500_log": {
   "month": "2026-11",
   "added": false
  },
  "vt": {
   "ticker": "VT",
-  "date": "2026-11-25",
-  "close": 147.54,
-  "ret_1m": -6.44,
-  "ret_3m": -8.45,
-  "ret_6m": -5.96,
-  "ret_1y": 8.85,
-  "from_100d_high": -8.91,
-  "from_52w_high": -8.91
+  "date": "2026-11-27",
+  "close": 150.18,
+  "ret_1m": -5.12,
+  "ret_3m": -6.49,
+  "ret_6m": -4.43,
+  "ret_1y": 9.78,
+  "from_100d_high": -7.28,
+  "from_52w_high": -7.28
  },
  "errors": []
 }
