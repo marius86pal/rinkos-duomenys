@@ -1,16 +1,17 @@
 {
- "generated_utc": "2026-11-27T19:22:04+00:00",
+ "generated_utc": "2026-11-27T19:30:25+00:00",
  "last_price_date": "2026-11-27",
  "source": "Yahoo Finance per yfinance",
  "yfinance": "1.8.0",
  "universe_stocks": 507,
  "universe_etf": 32,
- "priced": 537,
- "candidates": 211,
- "eps_ok": 210,
- "analysts_ok": 210,
+ "priced": 538,
+ "candidates": 212,
+ "eps_ok": 211,
+ "analysts_ok": 211,
  "analysts_errors": 0,
- "analyst_actions_90d": 2133,
+ "analyst_actions_90d": 2143,
+ "analyst_last_action": "2026-11-12",
  "archive": {
   "built_utc": "2026-11-25T08:01:52+00:00",
   "from": "2000-01-03",
@@ -23,6 +24,7 @@
   "tickers_with_history": 506,
   "rows": 173200,
   "from": "2011-12-08",
+  "last_action": "2026-11-12",
   "rebuilt": false
  },
  "former_members_tracked": [],
@@ -42,5 +44,7 @@
   "from_100d_high": -7.28,
   "from_52w_high": -7.28
  },
- "errors": []
+ "errors": [
+  "analitikų veiksmai pasenę: naujausias 2026-11-12 (Yahoo nebeatnaujina upgrades_downgrades)"
+ ]
 }

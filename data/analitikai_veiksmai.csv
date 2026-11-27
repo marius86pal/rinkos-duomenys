@@ -198,19 +198,6 @@ MCK,2026-10-20,Mizuho,main,Neutral,Neutral,Raises,905.0,1020.0
 MCK,2026-10-16,UBS,main,Buy,Buy,Raises,1080.0,1200.0
 MCK,2026-10-07,Leerink Partners,main,Outperform,Outperform,Raises,1030.0,1070.0
 MCK,2026-09-14,RBC Capital,reit,Sector Perform,Sector Perform,Maintains,845.0,845.0
-HCA,2026-11-03,Truist Securities,reit,Buy,Buy,Raises,495.0,510.0
-HCA,2026-11-02,Wells Fargo,main,Equal-Weight,Equal-Weight,Raises,381.0,468.0
-HCA,2026-10-30,RBC Capital,main,Outperform,Outperform,Raises,496.0,521.0
-HCA,2026-10-29,Barclays,main,Equal-Weight,Equal-Weight,Raises,387.0,401.0
-HCA,2026-10-28,TD Cowen,main,Buy,Buy,Raises,460.0,486.0
-HCA,2026-10-28,Keybanc,main,Overweight,Overweight,Raises,435.0,490.0
-HCA,2026-10-28,Baird,main,Neutral,Neutral,Raises,393.0,409.0
-HCA,2026-10-28,B of A Securities,main,Neutral,Neutral,Raises,450.0,500.0
-HCA,2026-10-12,TD Cowen,main,Buy,Buy,Raises,431.0,460.0
-HCA,2026-10-07,RBC Capital,main,Outperform,Outperform,Raises,435.0,496.0
-HCA,2026-09-23,BMO Capital,init,,Outperform,Announces,0.0,495.0
-HCA,2026-09-18,Leerink Partners,main,Outperform,Outperform,Maintains,492.0,492.0
-HCA,2026-09-08,RBC Capital,reit,Outperform,Outperform,Maintains,435.0,435.0
 MAR,2026-11-06,Citigroup,main,Neutral,Neutral,Raises,365.0,450.0
 MAR,2026-11-03,Goldman Sachs,main,Buy,Buy,Raises,406.0,456.0
 MAR,2026-11-03,Evercore ISI Group,main,Outperform,Outperform,Raises,420.0,455.0
@@ -227,6 +214,19 @@ MAR,2026-10-14,Freedom Broker,init,,Buy,Announces,0.0,408.0
 MAR,2026-10-12,Morgan Stanley,main,Overweight,Overweight,Raises,380.0,384.0
 MAR,2026-09-10,Truist Securities,main,Hold,Hold,Raises,356.0,360.0
 MAR,2026-09-02,Wolfe Research,init,,Peer Perform,,0.0,0.0
+HCA,2026-11-03,Truist Securities,reit,Buy,Buy,Raises,495.0,510.0
+HCA,2026-11-02,Wells Fargo,main,Equal-Weight,Equal-Weight,Raises,381.0,468.0
+HCA,2026-10-30,RBC Capital,main,Outperform,Outperform,Raises,496.0,521.0
+HCA,2026-10-29,Barclays,main,Equal-Weight,Equal-Weight,Raises,387.0,401.0
+HCA,2026-10-28,TD Cowen,main,Buy,Buy,Raises,460.0,486.0
+HCA,2026-10-28,Keybanc,main,Overweight,Overweight,Raises,435.0,490.0
+HCA,2026-10-28,Baird,main,Neutral,Neutral,Raises,393.0,409.0
+HCA,2026-10-28,B of A Securities,main,Neutral,Neutral,Raises,450.0,500.0
+HCA,2026-10-12,TD Cowen,main,Buy,Buy,Raises,431.0,460.0
+HCA,2026-10-07,RBC Capital,main,Outperform,Outperform,Raises,435.0,496.0
+HCA,2026-09-23,BMO Capital,init,,Outperform,Announces,0.0,495.0
+HCA,2026-09-18,Leerink Partners,main,Outperform,Outperform,Maintains,492.0,492.0
+HCA,2026-09-08,RBC Capital,reit,Outperform,Outperform,Maintains,435.0,435.0
 LUV,2026-10-29,TD Cowen,main,Buy,Buy,Raises,47.0,48.0
 LUV,2026-10-23,UBS,main,Buy,Buy,Raises,52.0,54.0
 LUV,2026-10-23,JP Morgan,main,Overweight,Overweight,Lowers,59.0,58.0
@@ -748,6 +748,13 @@ AAPL,2026-09-08,Needham,reit,Hold,Hold,,0.0,0.0
 AAPL,2026-09-02,Morgan Stanley,reit,Overweight,Overweight,Maintains,360.0,360.0
 AAPL,2026-09-02,DA Davidson,main,Neutral,Neutral,Maintains,270.0,270.0
 AAPL,2026-09-01,Rosenblatt,main,Neutral,Neutral,Raises,300.0,303.0
+CTAS,2026-09-30,Citigroup,main,Sell,Sell,Raises,180.0,181.0
+CTAS,2026-09-29,Argus Research,main,Buy,Buy,Raises,230.0,240.0
+CTAS,2026-09-24,UBS,main,Buy,Buy,Raises,230.0,235.0
+CTAS,2026-09-24,Baird,main,Outperform,Outperform,Raises,214.0,222.0
+CTAS,2026-09-24,Truist Securities,main,Buy,Buy,Raises,225.0,230.0
+CTAS,2026-09-24,RBC Capital,reit,Sector Perform,Sector Perform,Maintains,206.0,206.0
+CTAS,2026-09-22,Citigroup,main,Sell,Sell,Raises,175.0,180.0
 MA,2026-11-11,Bernstein,main,Outperform,Outperform,Raises,730.0,764.0
 MA,2026-11-10,Citigroup,main,Buy,Buy,Raises,675.0,800.0
 MA,2026-11-06,Freedom Broker,down,Buy,Hold,Raises,620.0,725.0
@@ -768,13 +775,6 @@ MA,2026-10-30,Cantor Fitzgerald,main,Overweight,Overweight,Raises,695.0,765.0
 MA,2026-10-23,Truist Securities,main,Buy,Buy,Raises,633.0,674.0
 MA,2026-10-09,Baird,main,Outperform,Outperform,Raises,660.0,710.0
 MA,2026-08-31,RBC Capital,main,Outperform,Outperform,Raises,642.0,696.0
-CTAS,2026-09-30,Citigroup,main,Sell,Sell,Raises,180.0,181.0
-CTAS,2026-09-29,Argus Research,main,Buy,Buy,Raises,230.0,240.0
-CTAS,2026-09-24,UBS,main,Buy,Buy,Raises,230.0,235.0
-CTAS,2026-09-24,Baird,main,Outperform,Outperform,Raises,214.0,222.0
-CTAS,2026-09-24,Truist Securities,main,Buy,Buy,Raises,225.0,230.0
-CTAS,2026-09-24,RBC Capital,reit,Sector Perform,Sector Perform,Maintains,206.0,206.0
-CTAS,2026-09-22,Citigroup,main,Sell,Sell,Raises,175.0,180.0
 NI,2026-10-22,HSBC,init,,Buy,Announces,0.0,49.5
 NI,2026-10-20,JP Morgan,main,Overweight,Overweight,Lowers,52.0,51.0
 NI,2026-10-19,Barclays,main,Overweight,Overweight,Lowers,45.0,44.0
@@ -860,6 +860,14 @@ SPG,2026-09-28,Barclays,main,Equal-Weight,Equal-Weight,Lowers,215.0,208.0
 SPG,2026-09-21,Evercore ISI Group,main,In-Line,In-Line,Lowers,219.0,216.0
 SPG,2026-09-17,Scotiabank,main,Sector Perform,Sector Perform,Lowers,222.0,221.0
 SPG,2026-09-14,Evercore ISI Group,main,In-Line,In-Line,Lowers,226.0,219.0
+FTV,2026-10-29,JP Morgan,main,Underweight,Underweight,Raises,56.0,59.0
+FTV,2026-10-29,RBC Capital,main,Sector Perform,Sector Perform,Raises,59.0,68.0
+FTV,2026-10-29,Citigroup,main,Neutral,Neutral,Raises,65.0,71.0
+FTV,2026-10-29,Truist Securities,reit,Hold,Hold,Raises,63.0,65.0
+FTV,2026-10-14,RBC Capital,main,Sector Perform,Sector Perform,Lowers,63.0,59.0
+FTV,2026-10-09,JP Morgan,main,Underweight,Underweight,Lowers,64.0,56.0
+FTV,2026-10-05,Truist Securities,main,Hold,Hold,Lowers,68.0,63.0
+FTV,2026-09-28,Evercore ISI Group,init,,In-Line,Announces,0.0,60.0
 KIM,2026-11-11,UBS,main,Buy,Buy,Raises,25.0,29.0
 KIM,2026-11-02,Piper Sandler,main,Overweight,Overweight,Raises,27.0,30.0
 KIM,2026-10-30,Evercore ISI Group,main,In-Line,In-Line,Raises,24.0,25.0
@@ -869,14 +877,6 @@ KIM,2026-10-09,UBS,main,Buy,Buy,Lowers,29.0,25.0
 KIM,2026-09-29,Morgan Stanley,main,Equal-Weight,Equal-Weight,Raises,24.0,25.0
 KIM,2026-09-28,Barclays,main,Overweight,Overweight,Lowers,28.0,27.0
 KIM,2026-09-24,Mizuho,main,Neutral,Neutral,Lowers,25.0,23.0
-FTV,2026-10-29,JP Morgan,main,Underweight,Underweight,Raises,56.0,59.0
-FTV,2026-10-29,RBC Capital,main,Sector Perform,Sector Perform,Raises,59.0,68.0
-FTV,2026-10-29,Citigroup,main,Neutral,Neutral,Raises,65.0,71.0
-FTV,2026-10-29,Truist Securities,reit,Hold,Hold,Raises,63.0,65.0
-FTV,2026-10-14,RBC Capital,main,Sector Perform,Sector Perform,Lowers,63.0,59.0
-FTV,2026-10-09,JP Morgan,main,Underweight,Underweight,Lowers,64.0,56.0
-FTV,2026-10-05,Truist Securities,main,Hold,Hold,Lowers,68.0,63.0
-FTV,2026-09-28,Evercore ISI Group,init,,In-Line,Announces,0.0,60.0
 LH,2026-10-29,UBS,main,Buy,Buy,Raises,380.0,420.0
 LH,2026-10-29,Barclays,main,Equal-Weight,Equal-Weight,Raises,330.0,380.0
 LH,2026-10-29,Truist Securities,main,Buy,Buy,Raises,365.0,395.0
@@ -908,6 +908,21 @@ HD,2026-11-10,Bernstein,main,Market Perform,Market Perform,Raises,344.0,357.0
 HD,2026-11-09,JP Morgan,main,Overweight,Overweight,Raises,396.0,400.0
 HD,2026-10-26,Stifel,main,Hold,Hold,Lowers,346.0,322.0
 HD,2026-09-09,Bernstein,main,Market Perform,Market Perform,Lowers,354.0,344.0
+TRV,2026-10-26,Cantor Fitzgerald,main,Overweight,Overweight,Raises,378.0,397.0
+TRV,2026-10-23,Morgan Stanley,main,Underweight,Underweight,Raises,330.0,350.0
+TRV,2026-10-20,BMO Capital,main,Market Perform,Market Perform,Raises,379.0,388.0
+TRV,2026-10-20,JP Morgan,main,Neutral,Neutral,Raises,352.0,379.0
+TRV,2026-10-20,Mizuho,main,Neutral,Neutral,Raises,345.0,371.0
+TRV,2026-10-20,"Keefe, Bruyette & Woods",main,Market Perform,Market Perform,Raises,372.0,382.0
+TRV,2026-10-19,Wells Fargo,main,Equal-Weight,Equal-Weight,Raises,341.0,377.0
+TRV,2026-10-19,Evercore ISI Group,main,In-Line,In-Line,Raises,349.0,372.0
+TRV,2026-10-19,Truist Securities,main,Buy,Buy,Raises,425.0,435.0
+TRV,2026-10-12,Wells Fargo,main,Equal-Weight,Equal-Weight,Lowers,356.0,341.0
+TRV,2026-10-09,JP Morgan,main,Neutral,Neutral,Raises,348.0,352.0
+TRV,2026-10-07,Mizuho,main,Neutral,Neutral,Lowers,348.0,345.0
+TRV,2026-10-07,Cantor Fitzgerald,main,Overweight,Overweight,Raises,377.0,378.0
+TRV,2026-09-21,Evercore ISI Group,main,In-Line,In-Line,Raises,338.0,342.0
+TRV,2026-09-16,Mizuho,main,Neutral,Neutral,Raises,343.0,348.0
 PYPL,2026-11-11,Bernstein,main,Market Perform,Market Perform,Raises,55.0,60.0
 PYPL,2026-10-29,Barclays,down,Equal-Weight,Underweight,Lowers,56.0,53.0
 PYPL,2026-10-28,UBS,main,Neutral,Neutral,Lowers,61.0,60.0
@@ -924,21 +939,6 @@ PYPL,2026-10-23,Truist Securities,main,Hold,Hold,Raises,53.0,58.0
 PYPL,2026-10-09,Barclays,main,Equal-Weight,Equal-Weight,Lowers,57.0,56.0
 PYPL,2026-08-31,Truist Securities,main,Hold,Hold,Lowers,62.0,53.0
 PYPL,2026-08-31,RBC Capital,main,Outperform,Outperform,Raises,65.0,70.0
-TRV,2026-10-26,Cantor Fitzgerald,main,Overweight,Overweight,Raises,378.0,397.0
-TRV,2026-10-23,Morgan Stanley,main,Underweight,Underweight,Raises,330.0,350.0
-TRV,2026-10-20,BMO Capital,main,Market Perform,Market Perform,Raises,379.0,388.0
-TRV,2026-10-20,JP Morgan,main,Neutral,Neutral,Raises,352.0,379.0
-TRV,2026-10-20,Mizuho,main,Neutral,Neutral,Raises,345.0,371.0
-TRV,2026-10-20,"Keefe, Bruyette & Woods",main,Market Perform,Market Perform,Raises,372.0,382.0
-TRV,2026-10-19,Wells Fargo,main,Equal-Weight,Equal-Weight,Raises,341.0,377.0
-TRV,2026-10-19,Evercore ISI Group,main,In-Line,In-Line,Raises,349.0,372.0
-TRV,2026-10-19,Truist Securities,main,Buy,Buy,Raises,425.0,435.0
-TRV,2026-10-12,Wells Fargo,main,Equal-Weight,Equal-Weight,Lowers,356.0,341.0
-TRV,2026-10-09,JP Morgan,main,Neutral,Neutral,Raises,348.0,352.0
-TRV,2026-10-07,Mizuho,main,Neutral,Neutral,Lowers,348.0,345.0
-TRV,2026-10-07,Cantor Fitzgerald,main,Overweight,Overweight,Raises,377.0,378.0
-TRV,2026-09-21,Evercore ISI Group,main,In-Line,In-Line,Raises,338.0,342.0
-TRV,2026-09-16,Mizuho,main,Neutral,Neutral,Raises,343.0,348.0
 ICE,2026-10-30,TD Cowen,main,Hold,Hold,Raises,167.0,182.0
 ICE,2026-10-30,Wells Fargo,main,Underweight,Underweight,Raises,160.0,167.0
 ICE,2026-10-30,Barclays,main,Overweight,Overweight,Raises,189.0,194.0
@@ -1238,6 +1238,10 @@ META,2026-09-01,Wedbush,reit,Neutral,Neutral,Maintains,595.0,595.0
 DGX,2026-10-07,Barclays,main,Overweight,Overweight,Raises,250.0,260.0
 DGX,2026-09-21,Truist Securities,main,Hold,Hold,Raises,250.0,260.0
 DGX,2026-09-08,UBS,main,Neutral,Neutral,Raises,232.0,245.0
+AVY,2026-11-02,Citigroup,main,Neutral,Neutral,Raises,186.0,191.0
+AVY,2026-10-31,UBS,main,Buy,Buy,Raises,225.0,230.0
+AVY,2026-10-30,JP Morgan,main,Overweight,Overweight,Raises,190.0,200.0
+AVY,2026-10-12,Truist Securities,main,Buy,Buy,Lowers,209.0,208.0
 ORLY,2026-10-31,UBS,main,Buy,Buy,Raises,120.0,122.0
 ORLY,2026-10-29,Wells Fargo,main,Overweight,Overweight,Raises,100.0,105.0
 ORLY,2026-10-26,Evercore ISI Group,main,Outperform,Outperform,Lowers,115.0,110.0
@@ -1245,10 +1249,6 @@ ORLY,2026-10-20,RBC Capital,main,Outperform,Outperform,Raises,110.0,111.0
 ORLY,2026-09-29,Bernstein,init,,Market Perform,Announces,0.0,94.0
 ORLY,2026-09-18,DA Davidson,main,Buy,Buy,Maintains,106.0,106.0
 ORLY,2026-09-16,DA Davidson,main,Buy,Buy,Maintains,106.0,106.0
-AVY,2026-11-02,Citigroup,main,Neutral,Neutral,Raises,186.0,191.0
-AVY,2026-10-31,UBS,main,Buy,Buy,Raises,225.0,230.0
-AVY,2026-10-30,JP Morgan,main,Overweight,Overweight,Raises,190.0,200.0
-AVY,2026-10-12,Truist Securities,main,Buy,Buy,Lowers,209.0,208.0
 STZ,2026-10-08,JP Morgan,main,Neutral,Neutral,Raises,133.0,136.0
 STZ,2026-10-08,Freedom Broker,up,Hold,Buy,Lowers,173.0,158.0
 STZ,2026-10-08,UBS,main,Buy,Buy,Lowers,145.0,144.0
@@ -1481,6 +1481,16 @@ TGT,2026-11-12,Guggenheim,reit,Buy,Buy,Maintains,175.0,175.0
 TGT,2026-11-09,JP Morgan,main,Neutral,Neutral,Raises,157.0,163.0
 TGT,2026-10-13,Evercore ISI Group,main,In-Line,In-Line,Lowers,170.0,165.0
 TGT,2026-09-30,HSBC,up,Hold,Buy,Raises,125.0,190.0
+CMS,2026-10-28,Wells Fargo,main,Equal-Weight,Equal-Weight,Lowers,79.0,73.0
+CMS,2026-10-22,HSBC,init,,Hold,Announces,0.0,69.0
+CMS,2026-10-21,Morgan Stanley,main,Equal-Weight,Equal-Weight,Lowers,77.0,73.0
+CMS,2026-10-19,BMO Capital,main,Outperform,Outperform,Raises,73.0,76.0
+CMS,2026-10-16,Barclays,main,Overweight,Overweight,Lowers,81.0,72.0
+CMS,2026-10-14,Truist Securities,main,Buy,Buy,Lowers,81.0,77.0
+CMS,2026-10-06,BMO Capital,main,Outperform,Outperform,Lowers,77.0,73.0
+CMS,2026-09-18,Morgan Stanley,main,Equal-Weight,Equal-Weight,Lowers,79.0,77.0
+CMS,2026-09-15,Jefferies,main,Hold,Hold,Lowers,78.0,74.0
+CMS,2026-09-08,BMO Capital,main,Outperform,Outperform,Lowers,82.0,77.0
 AMT,2026-11-05,Argus Research,reit,Buy,Buy,Maintains,210.0,210.0
 AMT,2026-10-30,Truist Securities,main,Buy,Buy,Raises,207.0,210.0
 AMT,2026-10-28,Citigroup,main,Buy,Buy,Lowers,225.0,220.0
